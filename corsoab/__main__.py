@@ -9,7 +9,17 @@ from . import graphics
 
 def game_world_transformer(handle: desper.WorldHandle, world: desper.World):
     """Instantiate game world."""
-    print('game transformer')
+    world.add_processor(graphics.RenderLoopProcessor())
+
+    world.create_entity(graphics.ScreenSurfaceHandler(),
+                        graphics.RenderHandler())
+
+    world.create_entity(
+        graphics.ScreenSurface(),
+        sdl2.SDL_GetWindowSurface(corsoab.window))
+
+    world.create_entity(desper.Transform2D((0, 0)),
+                        desper.resource_map['sprites/test_sprite'])
 
 
 if __name__ == '__main__':
