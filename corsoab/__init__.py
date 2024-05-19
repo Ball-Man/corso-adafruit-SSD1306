@@ -1,0 +1,4 @@
+BONNET_WIDTH = 128
+BONNET_HEIGHT = 64
+
+window = None
