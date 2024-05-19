@@ -6,6 +6,11 @@ import sdl2
 from . import graphics
 
 
+def game_world_transformer(handle: desper.WorldHandle, world: desper.World):
+    """Instantiate game world."""
+    print('game transformer')
+
+
 if __name__ == '__main__':
     sdl2.SDL_Init(0)
 
@@ -16,6 +21,11 @@ if __name__ == '__main__':
     directory_populator.add_rule('sprites', graphics.SurfaceHandle)
     directory_populator(desper.resource_map)
 
-    print(desper.resource_map['sprites/test_sprite'])
+    desper.resource_map['worlds/game'] = desper.WorldHandle()
+    desper.resource_map.get('worlds/game').transform_functions.append(
+        game_world_transformer)
+
+    desper.default_loop.switch(desper.resource_map.get('worlds/game'))
+    desper.default_loop.loop()
 
     sdl2.SDL_Quit()
