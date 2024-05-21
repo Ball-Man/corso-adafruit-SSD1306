@@ -44,7 +44,10 @@ if __name__ == '__main__':
         game_world_transformer)
 
     desper.default_loop.switch(desper.resource_map.get('worlds/game'))
-    desper.default_loop.loop()
+    try:
+        desper.default_loop.loop()
+    except desper.Quit:
+        pass
 
     sdl2.SDL_DestroyWindow(window)
     sdl2.SDL_Quit()
