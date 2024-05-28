@@ -7,6 +7,11 @@ import corsoab
 from . import graphics
 from . import desktop
 
+LAYOUT_START_X = 32
+LAYOUT_START_Y = 0
+LAYOUT_X_CELL_OFFSET = 1
+LAYOUT_Y_CELL_OFFSET = 1
+
 
 def base_game_world_transformer(handle: desper.WorldHandle,
                                 world: desper.World):
@@ -15,8 +20,17 @@ def base_game_world_transformer(handle: desper.WorldHandle,
 
     world.create_entity(graphics.ScreenSurfaceHandler())
 
-    world.create_entity(desper.Transform2D((0, 0)),
-                        desper.resource_map['sprites/test_sprite'])
+    marble_surface = desper.resource_map['sprites/marble1']
+    marble_width = marble_surface.contents.w
+    marble_height = marble_surface.contents.h
+    for row in range(5):
+        for column in range(5):
+            world.create_entity(
+                desper.Transform2D((LAYOUT_START_X + row
+                                    * (marble_width + LAYOUT_X_CELL_OFFSET),
+                                    LAYOUT_START_Y + column
+                                    * (marble_height + LAYOUT_Y_CELL_OFFSET))),
+                marble_surface)
 
 
 if __name__ == '__main__':
