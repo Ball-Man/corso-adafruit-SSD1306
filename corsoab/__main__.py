@@ -7,19 +7,27 @@ import corsoab
 from . import graphics
 
 
-def game_world_transformer(handle: desper.WorldHandle, world: desper.World):
-    """Instantiate game world."""
+def base_game_world_transformer(handle: desper.WorldHandle,
+                                world: desper.World):
+    """Instantiate game world basics (common to all platforms)."""
     world.add_processor(graphics.RenderLoopProcessor())
 
-    world.create_entity(graphics.ScreenSurfaceHandler(),
-                        graphics.RenderHandler())
+    world.create_entity(graphics.ScreenSurfaceHandler())
+
+    world.create_entity(desper.Transform2D((0, 0)),
+                        desper.resource_map['sprites/test_sprite'])
+
+
+def desktop_game_world_transformer(handle: desper.WorldHandle,
+                                   world: desper.World):
+    """Instantiate game world (desktop specific)."""
+    world.add_processor(graphics.RenderLoopProcessor())
+
+    world.create_entity(graphics.RenderHandler())
 
     world.create_entity(
         graphics.ScreenSurface(),
         sdl2.SDL_GetWindowSurface(corsoab.window))
-
-    world.create_entity(desper.Transform2D((0, 0)),
-                        desper.resource_map['sprites/test_sprite'])
 
 
 if __name__ == '__main__':
@@ -41,7 +49,9 @@ if __name__ == '__main__':
 
     desper.resource_map['worlds/game'] = desper.WorldHandle()
     desper.resource_map.get('worlds/game').transform_functions.append(
-        game_world_transformer)
+        base_game_world_transformer)
+    desper.resource_map.get('worlds/game').transform_functions.append(
+        desktop_game_world_transformer)
 
     desper.default_loop.switch(desper.resource_map.get('worlds/game'))
     try:
