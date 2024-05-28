@@ -4,6 +4,10 @@ import ctypes
 import desper
 import sdl2
 
+import corsoab
+from . import graphics
+from . import desktop
+
 
 class InputProcessor(desper.Processor):
     """Handle input events."""
@@ -26,3 +30,18 @@ class KeyLogger:
     def on_key_down(self, key):
         """Handle key down: log."""
         print('key down:', key)
+
+
+def game_world_transformer(handle: desper.WorldHandle,
+                           world: desper.World):
+    """Instantiate game world (desktop specific)."""
+    world.add_processor(graphics.RenderLoopProcessor())
+    world.add_processor(desktop.InputProcessor())
+
+    world.create_entity(graphics.RenderHandler())
+
+    world.create_entity(
+        graphics.ScreenSurface(),
+        sdl2.SDL_GetWindowSurface(corsoab.window))
+
+    # world.create_entity(desktop.KeyLogger())

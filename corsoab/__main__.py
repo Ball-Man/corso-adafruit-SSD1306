@@ -19,21 +19,6 @@ def base_game_world_transformer(handle: desper.WorldHandle,
                         desper.resource_map['sprites/test_sprite'])
 
 
-def desktop_game_world_transformer(handle: desper.WorldHandle,
-                                   world: desper.World):
-    """Instantiate game world (desktop specific)."""
-    world.add_processor(graphics.RenderLoopProcessor())
-    world.add_processor(desktop.InputProcessor())
-
-    world.create_entity(graphics.RenderHandler())
-
-    world.create_entity(
-        graphics.ScreenSurface(),
-        sdl2.SDL_GetWindowSurface(corsoab.window))
-
-    # world.create_entity(desktop.KeyLogger())
-
-
 if __name__ == '__main__':
     sdl2.SDL_Init(0)
 
@@ -55,7 +40,7 @@ if __name__ == '__main__':
     desper.resource_map.get('worlds/game').transform_functions.append(
         base_game_world_transformer)
     desper.resource_map.get('worlds/game').transform_functions.append(
-        desktop_game_world_transformer)
+        desktop.game_world_transformer)
 
     desper.default_loop.switch(desper.resource_map.get('worlds/game'))
     try:
