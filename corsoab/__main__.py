@@ -18,6 +18,7 @@ def base_game_world_transformer(handle: desper.WorldHandle,
                                 world: desper.World):
     """Instantiate game world basics (common to all platforms)."""
     world.add_processor(graphics.RenderLoopProcessor())
+    world.add_processor(graphics.TimeProcessor())
 
     world.create_entity(graphics.ScreenSurfaceHandler())
 

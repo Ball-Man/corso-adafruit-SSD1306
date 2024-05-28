@@ -1,5 +1,6 @@
 """Graphics rendering powered by SDL."""
 import ctypes
+import time
 
 import desper
 import sdl2
@@ -65,3 +66,17 @@ class RenderLoopProcessor(desper.Processor):
     def process(self, dt):
         self.world.dispatch('update_screen_surface')
         self.world.dispatch('render')
+
+
+class TimeProcessor(desper.Processor):
+    """Wait based on the given framerate cap."""
+
+    def __init__(self, interval=1 / 60):
+        self.interval = interval
+        self._start_time = time.perf_counter_ns()
+
+    def process(self, _):
+        processing_time = (time.perf_counter_ns() - self._start_time) * 1e-9
+        time.sleep(max(self.interval - processing_time, 0.))
+
+        self._start_time = time.perf_counter_ns()
