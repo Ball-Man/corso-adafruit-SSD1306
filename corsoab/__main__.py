@@ -1,4 +1,5 @@
 import pathlib
+from itertools import cycle
 
 import desper
 import sdl2
@@ -21,6 +22,9 @@ def base_game_world_transformer(handle: desper.WorldHandle,
     world.create_entity(graphics.ScreenSurfaceHandler())
 
     marble_surface = desper.resource_map['sprites/marble1']
+    marble_cycle = cycle((marble_surface,
+                          desper.resource_map['sprites/marble2'],
+                          desper.resource_map['sprites/dye1']))
     marble_width = marble_surface.contents.w
     marble_height = marble_surface.contents.h
     for row in range(5):
@@ -30,7 +34,7 @@ def base_game_world_transformer(handle: desper.WorldHandle,
                                     * (marble_width + LAYOUT_X_CELL_OFFSET),
                                     LAYOUT_START_Y + column
                                     * (marble_height + LAYOUT_Y_CELL_OFFSET))),
-                marble_surface)
+                next(marble_cycle))
 
 
 if __name__ == '__main__':
