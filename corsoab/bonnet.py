@@ -90,21 +90,16 @@ class RenderHandler(desper.Controller):
 
 
 def game_world_transformer(handle: desper.WorldHandle, world: desper.World):
-    """Instantiate game world."""
-    world.add_processor(graphics.RenderLoopProcessor())
+    """Instantiate game world (bonnet specific)."""
     world.add_processor(InputProcessor())
 
-    world.create_entity(graphics.ScreenSurfaceHandler(),
-                        RenderHandler())
+    world.create_entity(RenderHandler())
 
     world.create_entity(
         graphics.ScreenSurface(),
         sdl2.SDL_CreateRGBSurfaceWithFormat(0, corsoab.BONNET_WIDTH,
                                             corsoab.BONNET_HEIGHT, 1,
                                             sdl2.SDL_PIXELFORMAT_RGB332))
-
-    world.create_entity(desper.Transform2D((0, 0)),
-                        desper.resource_map['sprites/test_sprite'])
 
     world.create_entity(QuitButtonHandler(Button.B))
 
