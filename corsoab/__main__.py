@@ -5,6 +5,7 @@ import sdl2
 
 import corsoab
 from . import graphics
+from . import desktop
 
 
 def base_game_world_transformer(handle: desper.WorldHandle,
@@ -22,12 +23,15 @@ def desktop_game_world_transformer(handle: desper.WorldHandle,
                                    world: desper.World):
     """Instantiate game world (desktop specific)."""
     world.add_processor(graphics.RenderLoopProcessor())
+    world.add_processor(desktop.InputProcessor())
 
     world.create_entity(graphics.RenderHandler())
 
     world.create_entity(
         graphics.ScreenSurface(),
         sdl2.SDL_GetWindowSurface(corsoab.window))
+
+    # world.create_entity(desktop.KeyLogger())
 
 
 if __name__ == '__main__':
