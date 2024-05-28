@@ -32,13 +32,21 @@ class KeyLogger:
         print('key down:', key)
 
 
+@desper.event_handler('render')
+class RenderHandler(desper.Controller):
+    """Actually render screen on ``render`` event."""
+
+    def render(self):
+        sdl2.SDL_UpdateWindowSurface(corsoab.window)
+
+
 def game_world_transformer(handle: desper.WorldHandle,
                            world: desper.World):
     """Instantiate game world (desktop specific)."""
     world.add_processor(graphics.RenderLoopProcessor())
     world.add_processor(desktop.InputProcessor())
 
-    world.create_entity(graphics.RenderHandler())
+    world.create_entity(RenderHandler())
 
     world.create_entity(
         graphics.ScreenSurface(),

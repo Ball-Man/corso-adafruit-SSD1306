@@ -4,7 +4,6 @@ import ctypes
 import desper
 import sdl2
 
-import corsoab
 from . import BONNET_WIDTH, BONNET_HEIGHT
 
 LP_SDL_Surface = ctypes.POINTER(sdl2.SDL_Surface)
@@ -58,14 +57,6 @@ class ScreenSurfaceHandler(desper.Controller):
                 screen_surface,
                 sdl2.SDL_Rect(*transform.position, surface.contents.w,
                               surface.contents.h))
-
-
-@desper.event_handler('render')
-class RenderHandler(desper.Controller):
-    """Actually render screen on ``render`` event."""
-
-    def render(self):
-        sdl2.SDL_UpdateWindowSurface(corsoab.window)
 
 
 class RenderLoopProcessor(desper.Processor):
