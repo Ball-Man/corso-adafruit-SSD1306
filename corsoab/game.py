@@ -81,7 +81,7 @@ class GameHandler(desper.Controller):
 
         self._resource_map = {
             (1, False): desper.resource_map['sprites/dye1'],
-            (2, False): desper.resource_map['sprites/dye1'],    # TODO: dye2
+            (2, False): desper.resource_map['sprites/dye2'],
             (1, True): desper.resource_map['sprites/marble1'],
             (2, True): desper.resource_map['sprites/marble2']
         }
