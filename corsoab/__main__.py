@@ -39,6 +39,22 @@ def base_game_world_transformer(handle: desper.WorldHandle,
                                     LAYOUT_START_Y + column
                                     * (marble_height + LAYOUT_Y_CELL_OFFSET))))
 
+    # Add visual cursors
+    hor_cursor_surface = desper.resource_map['sprites/hor_cursor']
+    hor_cursor_x_offset = (marble_width - hor_cursor_surface.contents.w) // 2
+    # Top
+    world.create_entity(hor_cursor_surface,
+                        desper.Transform2D(),
+                        game.CursorHandler(grid, (hor_cursor_x_offset,
+                                                  -LAYOUT_Y_CELL_OFFSET)))
+    # Bottom
+    world.create_entity(hor_cursor_surface,
+                        desper.Transform2D(),
+                        game.CursorHandler(grid, (hor_cursor_x_offset,
+                                                  LAYOUT_Y_CELL_OFFSET
+                                                  + marble_height)))
+
+    # Init game loop
     player1 = game.UserPlayer()
     player2 = game.UserPlayer()
     world.create_entity(player1)

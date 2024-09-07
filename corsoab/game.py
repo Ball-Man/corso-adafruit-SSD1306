@@ -26,6 +26,9 @@ class UserPlayer(desper.Controller, GUIPlayer):
         """Enable player input."""
         self._current_state = state
 
+        # Update visual cursor to this player's position
+        self.world.dispatch('on_cursor_update', self.cursor_x, self.cursor_y)
+
         # Block inputs for one frame to prevent funky event overlaps
         # between multiple UserPlayers.
         self.block_next_frame()
@@ -59,6 +62,9 @@ class UserPlayer(desper.Controller, GUIPlayer):
         self.cursor_x = ((self.cursor_x + horizontal)
                          % self._current_state.width)
         self.cursor_y = (self.cursor_y + vertical) % self._current_state.height
+
+        # Update visual cursor as well
+        self.world.dispatch('on_cursor_update', self.cursor_x, self.cursor_y)
 
         # Make a move
         if key == sdl2.SDL_SCANCODE_RETURN:
@@ -123,3 +129,26 @@ class GameHandler(desper.Controller):
             return
 
         self.next_player()
+
+
+@desper.event_handler('on_cursor_update')
+class CursorHandler(desper.Controller):
+    """Event handler for the visual cursor.
+
+    Reacts to the user cursor positional updates and updates
+    the visual coordinates accordingly. One entity of this kind can
+    only handle the position of one SDL surface. Having multiple of
+    them is possible.
+    """
+    transform = desper.ComponentReference(desper.Transform2D)
+
+    def __init__(self, grid, pixel_offset: tuple[int, int]):
+        self.grid = grid
+        self.pixel_offset = pixel_offset
+
+    def on_cursor_update(self, cursor_x: int, cursor_y: int):
+        """Set transform position based on the received coordinates."""
+        selected_position = self.world.get_component(
+            self.grid[cursor_x][cursor_y], desper.Transform2D).position
+
+        self.transform.position = selected_position + self.pixel_offset
