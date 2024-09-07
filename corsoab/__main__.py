@@ -1,12 +1,13 @@
 import pathlib
-from itertools import cycle
 
 import desper
+import corso.model as corso
 import sdl2
 
 import corsoab
 from . import graphics
 from . import desktop
+from . import game
 
 LAYOUT_START_X = 32
 LAYOUT_START_Y = 0
@@ -17,25 +18,34 @@ LAYOUT_Y_CELL_OFFSET = 1
 def base_game_world_transformer(handle: desper.WorldHandle,
                                 world: desper.World):
     """Instantiate game world basics (common to all platforms)."""
+    world.add_processor(desper.CoroutineProcessor())
     world.add_processor(graphics.RenderLoopProcessor())
     world.add_processor(graphics.TimeProcessor())
 
     world.create_entity(graphics.ScreenSurfaceHandler())
 
     marble_surface = desper.resource_map['sprites/marble1']
-    marble_cycle = cycle((marble_surface,
-                          desper.resource_map['sprites/marble2'],
-                          desper.resource_map['sprites/dye1']))
     marble_width = marble_surface.contents.w
     marble_height = marble_surface.contents.h
-    for row in range(5):
-        for column in range(5):
-            world.create_entity(
+
+    starting_state = corso.Corso()
+    grid = [[0 for _ in range(starting_state.width)]
+            for _ in range(starting_state.height)]
+    for row in range(starting_state.height):
+        for column in range(starting_state.width):
+            grid[row][column] = world.create_entity(
                 desper.Transform2D((LAYOUT_START_X + row
                                     * (marble_width + LAYOUT_X_CELL_OFFSET),
                                     LAYOUT_START_Y + column
-                                    * (marble_height + LAYOUT_Y_CELL_OFFSET))),
-                next(marble_cycle))
+                                    * (marble_height + LAYOUT_Y_CELL_OFFSET))))
+
+    player1 = game.UserPlayer()
+    player2 = game.UserPlayer()
+    world.create_entity(player1)
+    world.create_entity(player2)
+
+    world.create_entity(game.GameHandler(grid, starting_state,
+                                         (player1, player2)))
 
 
 if __name__ == '__main__':
