@@ -116,4 +116,10 @@ class GameHandler(desper.Controller):
                 self.grid[y][x] = self.world.create_entity(
                     transform, self._resource_map[cell])
 
+        # Check for game termination
+        terminal_status, winner = self.state.terminal
+        if terminal_status:
+            self.world.dispatch('on_game_over', winner)
+            return
+
         self.next_player()
