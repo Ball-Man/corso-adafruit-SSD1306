@@ -68,6 +68,17 @@ _BUTTONS = {
 }
 
 
+_BONNET_TO_SDL_MAP = {
+    Button.A: sdl2.SDL_SCANCODE_RETURN,
+    Button.B: sdl2.SDL_SCANCODE_ESCAPE,
+    Button.L: sdl2.SDL_SCANCODE_LEFT,
+    Button.R: sdl2.SDL_SCANCODE_RIGHT,
+    Button.U: sdl2.SDL_SCANCODE_UP,
+    Button.D: sdl2.SDL_SCANCODE_DOWN,
+    Button.C: sdl2.SDL_SCANCODE_DELETE,
+}
+
+
 def fill_display(display, surface):
     pixels = ctypes.cast(surface.contents.pixels,
                          ctypes.POINTER(ctypes.c_uint8))
@@ -100,8 +111,9 @@ def game_world_transformer(handle: desper.WorldHandle, world: desper.World):
         sdl2.SDL_CreateRGBSurfaceWithFormat(0, corsoab.BONNET_WIDTH,
                                             corsoab.BONNET_HEIGHT, 1,
                                             sdl2.SDL_PIXELFORMAT_RGB332))
+    world.create_entity(BonnetToSDLKeys())
 
-    world.create_entity(QuitButtonHandler(Button.B))
+    world.create_entity(QuitButtonHandler(Button.C))
 
 
 @desper.event_handler('on_bonnet_button_press')
@@ -130,3 +142,12 @@ class InputProcessor(desper.Processor):
                 self.world.dispatch('on_bonnet_button_press', button)
 
             self._button_states[button] = button_value
+
+
+@desper.event_handler('on_bonnet_button_press')
+class BonnetToSDLKeys(desper.Controller):
+    """Map all bonnet button events to SDL keys."""
+
+    def on_bonnet_button_press(self, button):
+        """Dispatch the corresponding SDL key down event."""
+        self.world.dispatch('on_key_down', _BONNET_TO_SDL_MAP[button])
