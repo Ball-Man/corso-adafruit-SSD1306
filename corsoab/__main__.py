@@ -9,6 +9,7 @@ import corsoab
 from . import graphics
 from . import desktop
 from . import game
+from .log import logger
 
 # Detect whether we are on bonnet
 BONNET_DETECTED = True
@@ -91,6 +92,14 @@ if __name__ == '__main__':
 
     # In the end, we are on bonnet only if it is actually detected
     on_bonnet = BONNET_DETECTED and not args.desktop
+    # Warn the user of unexpected situations
+    if not args.desktop and not BONNET_DETECTED:
+        logger.warning('No bonnet detected, falling back to desktop mode. Use '
+                       'option "-d" to hide this warning.')
+    if args.desktop and BONNET_DETECTED:
+        logger.warning('Desktop mode was forced, but a bonnet is detected. '
+                       'Is this what you wanted? If you intend to run '
+                       'on bonnet, remove option "-d".')
 
     if not on_bonnet:       # Only create a window on desktop
         window = sdl2.SDL_CreateWindow(b'Corso on adafruit bonnet',
