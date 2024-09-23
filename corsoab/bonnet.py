@@ -8,14 +8,13 @@ import adafruit_ssd1306
 import sdl2
 from digitalio import DigitalInOut, Direction, Pull
 
-import corsoab
 from . import graphics
 
 # Create the I2C interface.
 i2c = busio.I2C(board.SCL, board.SDA)
 # Create the SSD1306 OLED class.
-display = adafruit_ssd1306.SSD1306_I2C(corsoab.BONNET_WIDTH,
-                                       corsoab.BONNET_HEIGHT, i2c)
+display = adafruit_ssd1306.SSD1306_I2C(graphics.BONNET_WIDTH,
+                                       graphics.BONNET_HEIGHT, i2c)
 
 _BUTTON_A_DIGITAL = DigitalInOut(board.D5)
 _BUTTON_A_DIGITAL.direction = Direction.INPUT
@@ -82,8 +81,8 @@ _BONNET_TO_SDL_MAP = {
 def fill_display(display, surface):
     pixels = ctypes.cast(surface.contents.pixels,
                          ctypes.POINTER(ctypes.c_uint8))
-    for y in range(corsoab.BONNET_HEIGHT):
-        for x in range(corsoab.BONNET_WIDTH):
+    for y in range(graphics.BONNET_HEIGHT):
+        for x in range(graphics.BONNET_WIDTH):
             display.pixel(x, y, pixels[128 * y + x] & 1)
 
 
@@ -108,8 +107,8 @@ def game_world_transformer(handle: desper.WorldHandle, world: desper.World):
 
     world.create_entity(
         graphics.ScreenSurface(),
-        sdl2.SDL_CreateRGBSurfaceWithFormat(0, corsoab.BONNET_WIDTH,
-                                            corsoab.BONNET_HEIGHT, 1,
+        sdl2.SDL_CreateRGBSurfaceWithFormat(0, graphics.BONNET_WIDTH,
+                                            graphics.BONNET_HEIGHT, 1,
                                             sdl2.SDL_PIXELFORMAT_RGB332))
     world.create_entity(BonnetToSDLKeys())
 

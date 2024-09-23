@@ -5,7 +5,9 @@ import time
 import desper
 import sdl2
 
-from . import BONNET_WIDTH, BONNET_HEIGHT
+# Basic bonnet size, also used for window/surface dimenions
+BONNET_WIDTH = 128
+BONNET_HEIGHT = 64
 
 LP_SDL_Surface = ctypes.POINTER(sdl2.SDL_Surface)
 
@@ -43,8 +45,7 @@ class ScreenSurfaceHandler(desper.Controller):
         screen_surface_entity, _ = self.world.get(ScreenSurface)[0]
         screen_surface = self.world.get_component(screen_surface_entity,
                                                   LP_SDL_Surface)
-        sdl2.SDL_FillRect(screen_surface, sdl2.SDL_Rect(0, 0, BONNET_WIDTH,
-                                                        BONNET_HEIGHT), 0)
+        sdl2.SDL_FillRect(screen_surface, None, 0)
 
         for entity, surface in self.world.get(LP_SDL_Surface):
             if entity == screen_surface_entity:
