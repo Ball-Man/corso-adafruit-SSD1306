@@ -102,15 +102,9 @@ class RenderHandler(desper.Controller):
 def game_world_transformer(handle: desper.WorldHandle, world: desper.World):
     """Instantiate game world (bonnet specific)."""
     world.add_processor(InputProcessor())
+    world.create_entity(BonnetToSDLKeys())
 
     world.create_entity(RenderHandler())
-
-    world.create_entity(
-        graphics.ScreenSurface(),
-        sdl2.SDL_CreateRGBSurfaceWithFormat(0, graphics.BONNET_WIDTH,
-                                            graphics.BONNET_HEIGHT, 1,
-                                            sdl2.SDL_PIXELFORMAT_RGB332))
-    world.create_entity(BonnetToSDLKeys())
 
     world.create_entity(QuitButtonHandler(Button.C))
 

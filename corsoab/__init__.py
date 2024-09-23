@@ -29,7 +29,13 @@ def base_game_world_transformer(handle: desper.WorldHandle,
     world.add_processor(graphics.RenderLoopProcessor())
     world.add_processor(graphics.TimeProcessor())
 
+    # Setup screen rendering
     world.create_entity(graphics.ScreenSurfaceHandler())
+    world.create_entity(
+        graphics.ScreenSurface(),
+        sdl2.SDL_CreateRGBSurfaceWithFormat(0, graphics.BONNET_WIDTH,
+                                            graphics.BONNET_HEIGHT, 1,
+                                            sdl2.SDL_PIXELFORMAT_RGB332))
 
     marble_surface = desper.resource_map['sprites/marble1']
     marble_width = marble_surface.contents.w

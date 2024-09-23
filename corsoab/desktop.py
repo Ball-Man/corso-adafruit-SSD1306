@@ -37,6 +37,14 @@ class RenderHandler(desper.Controller):
     """Actually render screen on ``render`` event."""
 
     def render(self):
+        # Retrieve necessary surfaces (window, game screen)
+        screen_surface_entity, _ = self.world.get(graphics.ScreenSurface)[0]
+        screen_surface = self.world.get_component(screen_surface_entity,
+                                                  graphics.LP_SDL_Surface)
+        window_surface = sdl2.SDL_GetWindowSurface(corsoab.window)
+
+        # Update window surface
+        sdl2.SDL_BlitScaled(screen_surface, None, window_surface, None)
         sdl2.SDL_UpdateWindowSurface(corsoab.window)
 
 
@@ -47,9 +55,5 @@ def game_world_transformer(handle: desper.WorldHandle,
     world.add_processor(desktop.InputProcessor())
 
     world.create_entity(RenderHandler())
-
-    world.create_entity(
-        graphics.ScreenSurface(),
-        sdl2.SDL_GetWindowSurface(corsoab.window))
 
     # world.create_entity(desktop.KeyLogger())
