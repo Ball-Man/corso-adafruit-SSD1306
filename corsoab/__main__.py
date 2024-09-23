@@ -1,3 +1,4 @@
+import argparse
 import pathlib
 
 import desper
@@ -8,6 +9,14 @@ import corsoab
 from . import graphics
 from . import desktop
 from . import game
+
+# Detect whether we are on bonnet
+BONNET_DETECTED = True
+try:
+    from . import bonnet
+except Exception:
+    BONNET_DETECTED = False
+    pass
 
 LAYOUT_START_X = 32
 LAYOUT_START_Y = 0
@@ -64,15 +73,33 @@ def base_game_world_transformer(handle: desper.WorldHandle,
                                          (player1, player2)))
 
 
+class Args:
+    """Custom argument namespace for corso bonnet CLI."""
+    desktop: bool = False
+
+
 if __name__ == '__main__':
+    # Arguments
+    parser = argparse.ArgumentParser(__doc__)
+
+    parser.add_argument('-d', action='store_true', dest='desktop')
+
+    args = parser.parse_args(namespace=Args())
+
+    # Actual initialization
     sdl2.SDL_Init(0)
 
-    window = sdl2.SDL_CreateWindow(b'Corso on adafruit bonnet',
-                                   sdl2.SDL_WINDOWPOS_UNDEFINED,
-                                   sdl2.SDL_WINDOWPOS_UNDEFINED,
-                                   corsoab.BONNET_WIDTH, corsoab.BONNET_HEIGHT,
-                                   0)
-    corsoab.window = window
+    # In the end, we are on bonnet only if it is actually detected
+    on_bonnet = BONNET_DETECTED and not args.desktop
+
+    if not on_bonnet:       # Only create a window on desktop
+        window = sdl2.SDL_CreateWindow(b'Corso on adafruit bonnet',
+                                       sdl2.SDL_WINDOWPOS_UNDEFINED,
+                                       sdl2.SDL_WINDOWPOS_UNDEFINED,
+                                       corsoab.BONNET_WIDTH,
+                                       corsoab.BONNET_HEIGHT,
+                                       0)
+        corsoab.window = window
 
     directory_populator = desper.DirectoryResourcePopulator(
         pathlib.Path(__file__).absolute().parents[1] / 'resources',
@@ -84,8 +111,14 @@ if __name__ == '__main__':
     desper.resource_map['worlds/game'] = desper.WorldHandle()
     desper.resource_map.get('worlds/game').transform_functions.append(
         base_game_world_transformer)
+
+    # Platform specific world transformer
+    platform_specific_transformer = desktop.game_world_transformer
+    if on_bonnet:
+        platform_specific_transformer = bonnet.game_world_transformer
+
     desper.resource_map.get('worlds/game').transform_functions.append(
-        desktop.game_world_transformer)
+            platform_specific_transformer)
 
     desper.default_loop.switch(desper.resource_map.get('worlds/game'))
     try:
@@ -93,5 +126,7 @@ if __name__ == '__main__':
     except desper.Quit:
         pass
 
-    sdl2.SDL_DestroyWindow(window)
+    if not on_bonnet:       # Window exists on desktop only
+        sdl2.SDL_DestroyWindow(window)
+
     sdl2.SDL_Quit()
