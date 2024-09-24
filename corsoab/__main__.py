@@ -1,5 +1,9 @@
 import argparse
+from dataclasses import dataclass, field
 
+from corso.cli import parse_player as corso_parse_player, CLIPlayer
+
+from .game import GUIPlayer, LegacyPlayer, UserPlayer
 from .log import logger
 from . import start_game
 
@@ -12,10 +16,27 @@ except Exception:
     pass
 
 
+@dataclass
 class Args:
     """Custom argument namespace for corso bonnet CLI."""
     desktop: bool = False
     scale: int = 3
+    players: list[GUIPlayer] = field(default_factory=lambda: [])
+
+
+def parse_player(player_name: str) -> GUIPlayer:
+    """Obtain a player instance from its CLI name.
+
+    Under the hood, this uses corso's CLI name parser.
+    """
+    legacy_player = corso_parse_player(player_name)
+
+    # Adapt CLI user player to our specialized user player
+    if type(legacy_player) is CLIPlayer:
+        return UserPlayer()
+
+    # Any other legacy player is wrapped in a LegacyPlayer and returned
+    return LegacyPlayer(legacy_player)
 
 
 if __name__ == '__main__':
@@ -24,6 +45,9 @@ if __name__ == '__main__':
 
     parser.add_argument('-d', action='store_true', dest='desktop')
     parser.add_argument('-s', action='store', dest='scale', type=int)
+    parser.add_argument('-p', '--player', type=parse_player,
+                        nargs='*', action='extend', metavar='PLAYER_TYPE',
+                        dest='players')
 
     args = parser.parse_args(namespace=Args())
 
@@ -38,4 +62,4 @@ if __name__ == '__main__':
                        'Is this what you wanted? If you intend to run '
                        'on bonnet, remove option "-d".')
 
-    start_game(on_bonnet, window_scale=args.scale)
+    start_game(*args.players, on_bonnet=on_bonnet, window_scale=args.scale)
