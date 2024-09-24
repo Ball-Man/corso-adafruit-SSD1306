@@ -1,6 +1,7 @@
 import abc
 from collections.abc import Collection
 from itertools import cycle
+from threading import Thread
 
 import desper
 import corso.model as corso
@@ -72,6 +73,43 @@ class UserPlayer(desper.Controller, GUIPlayer):
                                 corso.Action(self._current_state.player_index,
                                              self.cursor_x, self.cursor_y))
             self._current_state = None
+
+
+class LegacyPlayer(desper.Controller, GUIPlayer):
+    """Adapt legacy blocking corso.Players to GUI behaviour.
+
+    Player logic is executed on a separate thread and awaited by a
+    polling desper coroutine.
+    """
+
+    def __init__(self, legacy_player: corso.Player):
+        self.legacy_player = legacy_player
+
+    def _wrapped_select_action(self, state: corso.Corso,
+                               output: list[corso.Action]):
+        """Run given player's action logic and push result in a list.
+
+        This method is designed to be run on the separate thread for the
+        legacy player. For convenience, the selected action is pushed
+        into a list, so that the parent thread can access it. To keep
+        it thread safe, the list and the player must keep untouched
+        by the main thread until the selection is over.
+        """
+        output.append(self.legacy_player.select_action(state))
+
+    @desper.coroutine
+    def start_selection(self, state: corso.Corso):
+        """Start legacy player on a separate thread, wait for it."""
+        output_action_list = []
+        player_thread = Thread(target=self._wrapped_select_action,
+                               args=(state, output_action_list))
+        player_thread.start()
+
+        while player_thread.is_alive():
+            yield
+
+        # Retrieve output and notify it
+        self.world.dispatch('on_player_move', output_action_list[0])
 
 
 @desper.event_handler('on_player_move')
