@@ -7,6 +7,8 @@ import desper
 import corso.model as corso
 import sdl2
 
+from .log import logger
+
 
 class GUIPlayer(abc.ABC):
     """Abstract class for players suitable for :class:`GameHandler`."""
@@ -190,3 +192,25 @@ class CursorHandler(desper.Controller):
             self.grid[cursor_x][cursor_y], desper.Transform2D).position
 
         self.transform.position = selected_position + self.pixel_offset
+
+
+@desper.event_handler('on_key_down', 'on_game_over')
+class WaitKeyOnGameOver:
+    """On ``on_game_over`` event, log winner, wait for key, then quit."""
+    _game_is_over = False
+
+    def on_game_over(self, terminal_status: corso.Terminal, winner: int):
+        """Log and prepare to quit."""
+        # Draws not possible in usual 5x5 2-player games
+        if terminal_status == terminal_status.DRAW:
+            logger.info('It was a draw!')
+
+        if terminal_status == terminal_status.WON:
+            logger.info('Player %d wins', winner)
+
+        self._game_is_over = True
+
+    def on_key_down(self, key):
+        """If ready, quit."""
+        if self._game_is_over:
+            desper.quit_loop()
