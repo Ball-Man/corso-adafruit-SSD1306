@@ -65,7 +65,7 @@ def base_game_world_transformer(handle: desper.WorldHandle,
                         desper.Transform2D(),
                         game.CursorHandler(grid, (hor_cursor_x_offset,
                                                   LAYOUT_Y_CELL_OFFSET
-                                                  + marble_height)))
+                                                  + marble_height - 1)))
 
     # Init game loop
     player1 = game.UserPlayer()
