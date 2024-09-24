@@ -1,4 +1,6 @@
 import pathlib
+from typing import Collection
+from functools import partial
 
 import desper
 import corso.model as corso
@@ -23,7 +25,8 @@ LAYOUT_Y_CELL_OFFSET = 1
 
 
 def base_game_world_transformer(handle: desper.WorldHandle,
-                                world: desper.World):
+                                world: desper.World,
+                                players: Collection[game.GUIPlayer]):
     """Instantiate game world basics (common to all platforms)."""
     world.add_processor(desper.CoroutineProcessor())
     world.add_processor(graphics.RenderLoopProcessor())
@@ -68,16 +71,20 @@ def base_game_world_transformer(handle: desper.WorldHandle,
                                                   + marble_height - 1)))
 
     # Init game loop
-    player1 = game.UserPlayer()
-    player2 = game.UserPlayer()
-    world.create_entity(player1)
-    world.create_entity(player2)
+    # Players must be added as entities in order to dispatch events
+    for player in players:
+        world.create_entity(player)
 
-    world.create_entity(game.GameHandler(grid, starting_state,
-                                         (player1, player2)))
+    world.create_entity(game.GameHandler(grid, starting_state, players))
 
 
-def start_game(on_bonnet: bool, window_scale: int = 1):
+def start_game(player1: game.GUIPlayer = game.UserPlayer(),
+               player2: game.GUIPlayer = game.UserPlayer(),
+               *other_players: game.GUIPlayer,
+               on_bonnet: bool = False, window_scale: int = 1):
+    if len(other_players):
+        raise ValueError('Multiplayer (>2) games are not supported (yet?).')
+
     sdl2.SDL_Init(0)
 
     if not on_bonnet:       # Only create a window on desktop
@@ -98,7 +105,8 @@ def start_game(on_bonnet: bool, window_scale: int = 1):
 
     desper.resource_map['worlds/game'] = desper.WorldHandle()
     desper.resource_map.get('worlds/game').transform_functions.append(
-        base_game_world_transformer)
+        partial(base_game_world_transformer, players=(player1, player2,
+                                                      *other_players)))
 
     # Platform specific world transformer
     platform_specific_transformer = desktop.game_world_transformer
