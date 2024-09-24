@@ -15,6 +15,7 @@ except Exception:
 class Args:
     """Custom argument namespace for corso bonnet CLI."""
     desktop: bool = False
+    scale: int = 3
 
 
 if __name__ == '__main__':
@@ -22,6 +23,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(__doc__)
 
     parser.add_argument('-d', action='store_true', dest='desktop')
+    parser.add_argument('-s', action='store', dest='scale', type=int)
 
     args = parser.parse_args(namespace=Args())
 
@@ -36,4 +38,4 @@ if __name__ == '__main__':
                        'Is this what you wanted? If you intend to run '
                        'on bonnet, remove option "-d".')
 
-    start_game(on_bonnet)
+    start_game(on_bonnet, window_scale=args.scale)

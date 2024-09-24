@@ -77,7 +77,7 @@ def base_game_world_transformer(handle: desper.WorldHandle,
                                          (player1, player2)))
 
 
-def start_game(on_bonnet: bool):
+def start_game(on_bonnet: bool, window_scale: int = 1):
     sdl2.SDL_Init(0)
 
     if not on_bonnet:       # Only create a window on desktop
@@ -85,8 +85,8 @@ def start_game(on_bonnet: bool):
         window = sdl2.SDL_CreateWindow(b'Corso on adafruit bonnet',
                                        sdl2.SDL_WINDOWPOS_UNDEFINED,
                                        sdl2.SDL_WINDOWPOS_UNDEFINED,
-                                       graphics.BONNET_WIDTH,
-                                       graphics.BONNET_HEIGHT,
+                                       graphics.BONNET_WIDTH * window_scale,
+                                       graphics.BONNET_HEIGHT * window_scale,
                                        0)
 
     directory_populator = desper.DirectoryResourcePopulator(
