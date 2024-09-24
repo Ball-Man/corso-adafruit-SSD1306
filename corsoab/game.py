@@ -163,7 +163,7 @@ class GameHandler(desper.Controller):
         # Check for game termination
         terminal_status, winner = self.state.terminal
         if terminal_status:
-            self.world.dispatch('on_game_over', winner)
+            self.world.dispatch('on_game_over', terminal_status, winner)
             return
 
         self.next_player()
