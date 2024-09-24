@@ -7,6 +7,7 @@ import sdl2
 import corsoab
 from . import graphics
 from . import desktop
+from . import game
 
 
 class InputProcessor(desper.Processor):
@@ -55,5 +56,7 @@ def game_world_transformer(handle: desper.WorldHandle,
     world.add_processor(desktop.InputProcessor())
 
     world.create_entity(RenderHandler())
+
+    world.create_entity(game.WaitKeyOnGameOver())
 
     # world.create_entity(desktop.KeyLogger())
