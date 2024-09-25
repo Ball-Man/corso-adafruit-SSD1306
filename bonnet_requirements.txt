@@ -1,2 +1,2 @@
-RPi.GPIO<0.7
+RPi.GPIO
 adafruit-circuitpython-ssd1306
