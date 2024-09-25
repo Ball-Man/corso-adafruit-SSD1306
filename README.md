@@ -54,3 +54,18 @@ On desktop:
 On Raspberry Pi + bonnet:
 * ``Left Stick`` to move the cursor.
 * ``Button #5`` to make a move.
+
+### Custom games
+The command line interface provides a few extra parameters for game customization. In particular, a set of simple AIs that are included
+in the original ``corso`` package can be used.
+
+To play against a decent MiniMax AI (depth 3):
+```bash
+# Here the AI goes second
+python -m corsoab -p user mm
+
+# Here the AI goes first
+python -m corsoab -p mm user
+```
+
+See `python -m corsoab -h` for more options and built-in AI players.
