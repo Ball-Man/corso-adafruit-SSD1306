@@ -1,3 +1,8 @@
+"""Visual frontend for the game of Corso.
+
+Designed to be played on a Raspberry Pi equipped with an Adafruit 128x64
+OLED Bonnet, it can be played on any regular desktop computer.
+"""
 import argparse
 from dataclasses import dataclass, field
 
@@ -14,6 +19,26 @@ try:
 except Exception:
     BONNET_DETECTED = False
     pass
+
+DESKTOP_HELP = """
+Desktop mode. Use this if you are on a desktop machine. Never use it on
+a headless Raspberry Pi.
+"""
+SCALE_HELP = """
+Window scale. This has no effect when played on a bonnet. A value of 1
+sets the window size to exactly the display size of the bonnet (128x64).
+This is most likely too tiny. Defaults to 3.
+"""
+PLAYER_HELP = """
+Specify one or more player types for the game. Accepted player types
+are: "user", "random", "mmX". "user" is desigend for human input.
+"random" plays completely randomly. "mmX" is a MinMax player, where
+X specifies the depth of the search. X must be an integer greater than
+1. If omitted, defaults to 3. A suitable range goes from 1 to 6.
+Generally, a deeper search leads to a stronger player. This option
+can be specified multiple times to define the player order. If omitted,
+"user" type players are automatically added.
+"""
 
 
 @dataclass
@@ -41,13 +66,15 @@ def parse_player(player_name: str) -> GUIPlayer:
 
 if __name__ == '__main__':
     # Arguments
-    parser = argparse.ArgumentParser(__doc__)
+    parser = argparse.ArgumentParser('python -m corsoab', description=__doc__)
 
-    parser.add_argument('-d', action='store_true', dest='desktop')
-    parser.add_argument('-s', action='store', dest='scale', type=int)
+    parser.add_argument('-d', action='store_true', dest='desktop',
+                        help=DESKTOP_HELP)
+    parser.add_argument('-s', action='store', dest='scale', type=int,
+                        help=SCALE_HELP)
     parser.add_argument('-p', '--player', type=parse_player,
-                        nargs='*', action='extend', metavar='PLAYER_TYPE',
-                        dest='players')
+                        nargs='+', action='extend', metavar='PLAYER_TYPE',
+                        dest='players', help=PLAYER_HELP)
 
     args = parser.parse_args(namespace=Args())
 
