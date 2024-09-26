@@ -71,9 +71,14 @@ class UserPlayer(desper.Controller, GUIPlayer):
 
         # Make a move
         if key == sdl2.SDL_SCANCODE_RETURN:
-            self.world.dispatch('on_player_move',
-                                corso.Action(self._current_state.player_index,
-                                             self.cursor_x, self.cursor_y))
+            candidate_action = corso.Action(self._current_state.player_index,
+                                            self.cursor_x, self.cursor_y)
+
+            # Skip if the action is not legal
+            if candidate_action not in self._current_state.actions:
+                return
+
+            self.world.dispatch('on_player_move', candidate_action)
             self._current_state = None
 
 
