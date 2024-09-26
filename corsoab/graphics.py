@@ -81,3 +81,12 @@ class TimeProcessor(desper.Processor):
         time.sleep(max(self.interval - processing_time, 0.))
 
         self._start_time = time.perf_counter_ns()
+
+
+def build_surface(width: int, height: int, color: int) -> LP_SDL_Surface:
+    """Build a surface of given size and fill it with color."""
+    new_surface = sdl2.SDL_CreateRGBSurfaceWithFormat(
+        0, width, height, 1, sdl2.SDL_PIXELFORMAT_RGB332)
+    sdl2.SDL_FillRect(new_surface, None, color)
+
+    return new_surface
