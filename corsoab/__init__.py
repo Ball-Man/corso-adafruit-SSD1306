@@ -70,6 +70,16 @@ def base_game_world_transformer(handle: desper.WorldHandle,
                                                   LAYOUT_Y_CELL_OFFSET
                                                   + marble_height - 1)))
 
+    # Add grid borders
+    grid_border_surface = graphics.build_surface(1, graphics.BONNET_HEIGHT,
+                                                 0xFFFFFFFF)
+
+    world.create_entity(grid_border_surface,
+                        desper.Transform2D((LAYOUT_START_X - 1, 0)))
+    world.create_entity(grid_border_surface,
+                        desper.Transform2D((graphics.BONNET_WIDTH
+                                            - LAYOUT_START_X, 0)))
+
     # Init game loop
     # Players must be added as entities in order to dispatch events
     for player in players:
