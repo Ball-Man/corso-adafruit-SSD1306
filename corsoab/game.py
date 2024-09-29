@@ -152,6 +152,9 @@ class GameHandler(desper.Controller):
 
     def on_player_move(self, action: corso.Action):
         """Apply player move to the game state."""
+        # Notify a change to render during this frame
+        self.world.dispatch('on_dirty_render')
+
         # Step on current state
         self.state = self.state.step(action)
 
@@ -197,6 +200,9 @@ class CursorHandler(desper.Controller):
             self.grid[cursor_x][cursor_y], desper.Transform2D).position
 
         self.transform.position = selected_position + self.pixel_offset
+
+        # Notify a change to render during this frame
+        self.world.dispatch('on_dirty_render')
 
 
 @desper.event_handler('on_key_down', 'on_game_over')

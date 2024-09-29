@@ -99,14 +99,48 @@ class RenderHandler(desper.Controller):
         display.show()
 
 
+@desper.event_handler('on_dirty_render')
+class DirtyRenderLoopProcessor(desper.Processor):
+    """Dispatch ``update_screen_surface``, ``render`` events, if needed.
+
+    This implementation only updates and flips the screen if during the
+    frame a change is notified through the ``on_dirty_render`` event.
+    Since the game is extremely static, with nothing changes for entire
+    seconds, this is a lot of computation saved on the bonnet.
+    Not flipping the screen at all may be problematic on desktop
+    systems, let's keep it on the bonnet for the moment.
+
+    Could be potentially improved with more fine-grained dirty
+    rectangles.
+    """
+    _dirty = False
+
+    def on_dirty_render(self):
+        """Store a dirty "bit" for this frame."""
+        self._dirty = True
+
+    def process(self, dt):
+        if not self._dirty:
+            return
+
+        self.world.dispatch('update_screen_surface')
+        self.world.dispatch('render')
+
+        self._dirty = False
+
+
 def game_world_transformer(handle: desper.WorldHandle, world: desper.World):
     """Instantiate game world (bonnet specific)."""
     world.add_processor(InputProcessor())
+    world.add_processor(DirtyRenderLoopProcessor())
     world.create_entity(BonnetToSDLKeys())
 
     world.create_entity(RenderHandler())
 
     world.create_entity(QuitButtonHandler(Button.C))
+
+    # Notify a change to render during the game's first frame
+    world.dispatch('on_dirty_render')
 
 
 @desper.event_handler('on_bonnet_button_press')

@@ -29,7 +29,6 @@ def base_game_world_transformer(handle: desper.WorldHandle,
                                 players: Collection[game.GUIPlayer]):
     """Instantiate game world basics (common to all platforms)."""
     world.add_processor(desper.CoroutineProcessor())
-    world.add_processor(graphics.RenderLoopProcessor())
     world.add_processor(graphics.TimeProcessor())
 
     # Setup screen rendering
