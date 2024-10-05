@@ -203,8 +203,14 @@ class CursorHandler(desper.Controller):
 
 @desper.event_handler('on_key_down', 'on_game_over')
 class WaitKeyOnGameOver:
-    """On ``on_game_over`` event, log winner, wait for key, then quit."""
+    """On ``on_game_over`` event, log winner, wait for key, then quit.
+
+    By default, any key quits. Specifying a key is possible.
+    """
     _game_is_over = False
+
+    def __init__(self, key: int | None = None):
+        self.key = None
 
     @desper.coroutine
     def on_game_over(self, terminal_status: corso.Terminal, winner: int):
@@ -222,5 +228,8 @@ class WaitKeyOnGameOver:
 
     def on_key_down(self, key):
         """If ready, quit."""
+        if self.key is not None and key != self.key:
+            return
+
         if self._game_is_over:
             desper.quit_loop()
