@@ -206,6 +206,7 @@ class WaitKeyOnGameOver:
     """On ``on_game_over`` event, log winner, wait for key, then quit."""
     _game_is_over = False
 
+    @desper.coroutine
     def on_game_over(self, terminal_status: corso.Terminal, winner: int):
         """Log and prepare to quit."""
         # Draws not possible in usual 5x5 2-player games
@@ -214,6 +215,8 @@ class WaitKeyOnGameOver:
 
         if terminal_status == terminal_status.WON:
             logger.info('Player %d wins', winner)
+
+        yield
 
         self._game_is_over = True
 
