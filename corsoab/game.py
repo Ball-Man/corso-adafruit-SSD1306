@@ -17,7 +17,7 @@ class GUIPlayer(abc.ABC):
         pass
 
 
-@desper.event_handler('on_bonnet_button_press', 'on_key_down')
+@desper.event_handler('on_key_down')
 class UserPlayer(desper.Controller, GUIPlayer):
     """Corso GUI player for human users."""
     cursor_x = 0
@@ -46,10 +46,6 @@ class UserPlayer(desper.Controller, GUIPlayer):
         """Block user input, unblock next frame."""
         self._block_frame = True
         self._unblock_next_frame()
-
-    def on_bonnet_button_press(self, button):
-        """TODO"""
-        pass
 
     def on_key_down(self, key):
         """Handle key press, move cursor, make moves."""
