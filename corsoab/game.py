@@ -210,7 +210,7 @@ class WaitKeyOnGameOver:
     _game_is_over = False
 
     def __init__(self, key: int | None = None):
-        self.key = None
+        self.key = key
 
     @desper.coroutine
     def on_game_over(self, terminal_status: corso.Terminal, winner: int):
